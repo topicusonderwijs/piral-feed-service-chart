@@ -1,0 +1,18 @@
+{{- if and (.Values.persistence.enabled) (.Values.persistence.localVolume.enabled) -}}
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: {{ .Values.persistence.localVolume.name | default "volume-feed-service" | quote }}
+  labels:
+    type: local
+    app: {{ include "feed-service.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+spec:
+  storageClassName: {{ .Values.persistence.localVolume.storageClass }}
+  capacity:
+    storage: {{ .Values.persistence.localVolume.size | default "1Gi" }} 
+  accessModes:
+    - {{ .Values.persistence.localVolume.accessMode }}
+  hostPath:
+    path: {{ .Values.persistence.localVolume.hostPath }}
+{{- end -}}

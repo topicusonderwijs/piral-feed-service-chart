@@ -1,0 +1,500 @@
+# CONFIGURATION for the Feed Service
+# -------------------------------------------
+
+replicaCount: 1
+
+# Images details
+image:
+  repository: piral.azurecr.io/piral-feed-service
+  pullPolicy: Always
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "v1.11.0"
+
+# Configure the secret, which contains the credentials for the container registry.
+# For creating the image pull secret please visit:
+# https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry
+imagePullSecrets:
+  - name: feed-service-pull-secret
+
+# Overrides the name of the service. Default is the name of the service contained in the chart.
+nameOverride: ""
+fullnameOverride: ""
+
+# Definition for the usage of a service account
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+# Annotations for the pod deployment
+podAnnotations: {}
+
+# SecurityContext holds pod-level security attributes and common container settings.
+podSecurityContext:
+  fsGroup: 1789
+
+# It is recommended to run the pod with non-root user context and the user 'piralu' with user id 1789 is a good choice, 
+# since the docker container is configured to run with this user.
+securityContext:
+  runAsNonRoot: true
+  runAsUser: 1789
+  runAsGroup: 1789
+
+# Default service definition with the type ClusterIP (reachable only within the cluster) 
+service:
+  type: ClusterIP
+  port: 80
+
+# Define the rules for enabling ingress access to the Feed Service
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: feed-service.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+  #  - secretName: feed-service-tls
+  #    hosts:
+  #      - feed-service.local
+
+# Specify default resources for the operation of the Feed Service
+resources: {}
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+# Specify the auto scaling behavior as required. 
+autoscaling:
+  enabled: false
+  # minReplicas: 1
+  # maxReplicas: 3
+  # targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+license:
+  # Provide the license key - the license key will be included in a K8s secret
+  licenseKey: ""
+  # As alternative to providing the license key in this file, you can specify K8s secret
+  # if it exists already or is created outside of this deployment
+  existingSecret: ""
+  # Configures if auto renewal of the license is active, choices: auto, manual (default: auto)
+  renewal: "auto"
+  # Configures an optional proxy server to be used for auto renewal of the license (default: none)
+  renewalProxy: ""
+
+globalConfig:
+  # Provide the Public URL of the service (example: https://feed.piral.cloud)
+  publicUrl: "http://localhost:9000"
+
+  # Set the port to be used by the feed service (optional, default: 9000)
+  # The port value will also be used as container port in the deployment
+  httpPort: 9000
+  
+  # Sets the log level (optional, default: "info")
+  logLevel: "info"
+
+  # Sets if colors should be used (optional, default: "on") 
+  logColors: "off"
+
+  # The audit handler to use (optional, default: "none"); choices: "none", "local"
+  auditHandler: "none"
+
+# Specify the authentication provider for the feed service. Options are:
+# microsoft, oauth2, oidc, local, ldap, saml (default is local, if no provider is specified)
+authentication:
+  provider: "local"
+ 
+  # Configuration details for the local authentication provider. Setting the password is required
+  local:
+    # User name and password for the local administrator if not provided via password secret
+    username: ""
+    password: ""
+    # As alternative to providing the username and password directly in this values file,
+    # you can specify the name of the K8s secret if it exists already or is created outside of this deployment.
+    passwordSecret: ""
+  
+  # Configuration details for the Microsoft authentication provider.
+  # Required settings are: tenantId, clientId and adminEmail
+  microsoft:
+    # The admin email refers to the Microsoft account that you'll use to log in to your feed service.
+    # Usually, the value matches your email address. This is not only the first account that is added,
+    # but also the main account to do administrative work. 
+    # With this account you'll be able to add more users and give them rights, e.g., appointing other
+    # admins for your Piral Feed Service.
+    adminEmail: ""
+    # The Application ID specified in the Microsoft AD app registration
+    # Optional. If not specified, the value will be set to "api://<client-id>"
+    applicationId: ""
+    # The value for the authority URL. By default is set to "https://login.microsoftonline.com/<tenant-id>/"
+    authorityUrl: ""
+    # The ID of the application created in the Microsoft AD (called "client ID")
+    clientId: ""
+    # The tenant id from the Microsoft AD configuration
+    tenantId: ""
+    # Flag for access restricting the users registered in the Microsoft AD. 
+    # If set to "yes", will allow all registered users to access the feed 
+    openAccess: ""
+    # The scope used for the client authentication. Default is set to "api://<client-id>/Profile.Read"
+    # The scope is set in the Microsoft AD app registration and has a full URI format
+    scope: ""
+
+  # Configuration details required for a generic OAuth2 authentication provider    
+  # Required settings are: clientId, authorizationUrl, tokenUrl, oauth2Key, and adminId
+  oauth2:
+    # Generic OAuth 2 client ID (example: client)
+    clientId: ""
+    # Generic OAuth 2 authorization URL of the issuer 
+    # Required. Example: https://example.com/oauth/authorize
+    authorizationUrl: ""
+    # Generic OAuth 2 token URL of the issuer 
+    # Required. Example: https://example.com/oauth/token
+    tokenUrl: ""
+    # OAuth2 public key for verification 
+    # Required. Example: -----BEGIN PUBLIC KEY...
+    oauth2Key: ""
+    # OAuth2 user ID for administrative access 
+    # Required. Example: 9981f76a-d8a2-4cd8-9172-6a1c0d7e2491)
+    adminId: ""
+    # Name of the field that contains the user id within the JWT
+    # Optional. By default is set to "sub"
+    idClaim: ""
+    # OAuth2 scope to use when requesting a token 
+    # Optional. By default is set to a string empty value
+    scope: ""
+    # OAuth2 URL to use when the user logs out. Optional
+    logoutUrl: ""
+    # Allow access for every OAuth2 user; choices: yes, no (default: no)
+    # Optional. Changing the value alters the interpretation of the given user ID 
+    # and thus may have an impact on a running system.
+    openAccess: ""
+    # Transform the ID claim to be case-insensitive; 
+    # choices: yes, no (default: no)
+    lowercaseId: ""
+
+  # Configuration details used for the Generic OIDC authentication
+  # Required settings are: clientId, configUrl, and adminId
+  oidc:
+    # OIDC client ID 
+    # Required. Example: client
+    clientId: ""
+    # OIDC configuration URL 
+    # Required: Example: https://example.com/.well-known/oidc-configuration
+    configUrl: ""
+    # OIDC user id for administrative access 
+    # Required. Example: 9981f76a-d8a2-4cd8-9172-6a1c0d7e2491
+    adminId: ""
+    # Extra query parameters to use in the authorization request 
+    # Optional. Example: audience=foo&locale=en
+    queryParams: ""
+    # URL to override the default OIDC logout endpoint
+    # Optional. Example: https://my-provider.com/api/logout
+    logoutUrl: ""
+    # Allow access for every OIDC user
+    # Optional. Choices: yes, no (default: no)
+    openAccess: "no"
+    # Transform user IDs given by the issuer to be case-insensitive
+    # Optional. Choices: yes, no (default: no)
+    lowercaseId: "no"
+  
+  # Configuration details used for the Generic LDAP authentication
+  # Required settings are: server and adminId
+  ldap:
+    # LDAP server URL required for accessing the LDAP directory 
+    # Required. Example: ldp://ldap.foo.com:389
+    server: ""
+    # LDAP user id for administrative access 
+    # Required. Example: user123
+    adminId: ""
+    # Caches 100 LRU users for 5 minutes;
+    # Optional. Choices: yes, no (default: yes)
+    cacheUsers: "yes"
+    # The credentials to bind for (default: ``). Optional
+    bindCredentials: ""
+    # The bound distinguished names (DN) 
+    # Optional. Default: cn=root
+    bindDn: "cn=root"
+    # The search attributes separated by comma (default: ``). Optional
+    searchAttributes: ""
+    # The search filter (default: (uid={{username}})). Optional
+    searchFilter: "(uid={{username}})"
+    # The search base (default: ou=passport-ldapauth). Optional
+    searchBase: "ou=passport-ldapauth"
+    # Allow access for every LDAP user
+    # Optional. Choices: yes, no (default: no)
+    openAccess: "no"
+    # Transform user LDAP IDs to be case-insensitive; 
+    # Optional. Choices: yes, no (default: no)
+    lowercaseId: "no"
+
+  # Configuration details used for the Generic SAML authentication
+  # Required settings are: cert, issuer, authentication, entrypoint, and adminId
+  saml:
+    # SAML certificate to verify the process 
+    # Required. Example: MIID3DCCAsSgAw...=
+    cert: ""
+    # SAML issuer to communicate 
+    # Required. Example: Piral-Feed-Service-Test
+    issuer: ""
+    # SAML URL to use for SSO, i.e., entry point 
+    # Required. Example: https://samlidp.com/sso/some-app-id
+    entrypoint: ""
+    # SAML user ID for administrative access 
+    # Required. Example: foo@bar.com
+    adminId: ""
+    # SAML URL to use for SLO, i.e., exit point 
+    # Optional. Example: https://samlidp.com/slo/some-app-id
+    exitpoint: ""
+    # SAML identifier format to use 
+    # Default: urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress
+    identifierFormat: "urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress"
+    # SAML authn context format 
+    # default: urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport
+    authnContext: "urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport"
+    # Allow access for every SAML user
+    # Optional. Choices: yes, no (default: no)
+    openAccess: "no"
+    # Transform user IDs given by the IdP to be case-insensitive
+    # Optional. Choices: yes, no (default: no)
+    lowercaseId: "no"
+
+# File storage configuration for persisting the pilets. Options are:
+# azure-blobstorage, aws-s3, do-spaces, disk (default is disk, if no provider is specified)
+fileStorage:
+  provider: "disk"
+  # Configuration for the Azure Blob Storage provider
+  azureBlobStorage:
+    # Required. Azure Blob Storage account
+    account: ""
+    # Required. Azure Blob Storage key
+    key: ""
+    # Azure Blob Storage container (default: pilets)
+    containerName: ""
+    # Azure Blob Storage (CDN) URL/Prefix for pilets
+    url: ""
+    # Azure Blob Storage path prefix (default: empty)
+    pathPrefix: ""
+
+  # Configuration for the local disk as file storage provider
+  disk:
+    location: "./data/fs"
+
+  # Configuration for AWS S3
+  awsS3:
+    # Required. AWS S3 Storage AWS access key ID
+    accessId: ""
+    # Required. AWS S3 Storage AWS secret access key
+    accessKey: ""
+    # AWS S3 Storage container (default: pilets)
+    bucketName: ""
+    # bucketName: "piral-feed-test-bucket"
+    # AWS S3 Storage (CDN) URL/Prefix for pilets
+    url: ""
+    # Required. AWS S3 Storage Region (example: eu-central-1)
+    region: "eu-central-1"
+
+# Configuration for DigitalOcean Spaces
+  doSpaces:
+    # Required. DigitalOcean Spaces access key ID
+    accessId: ""
+    # Required. DigitalOcean Spaces secret access key
+    accessKey: ""
+    # DigitalOcean Spaces name (default: pilets)
+    name: ""
+    # DigitalOcean Spaces (CDN) URL/Prefix for pilets
+    url: ""
+
+ # Configuration for Google Cloud Storage
+  googleCloudStorage:
+    # Required. Google Cloud Storage project id to resolve project
+    projectId: ""
+    # Required. Google Cloud Storage client email for authentication
+    clientEmail: ""
+    # Required. Google Cloud Storage private key for authentication
+    privateKey: ""
+    # Google Cloud Storage container name (default: pilets)
+    bucketName: ""
+    # Google Cloud Storage (CDN) URL/Prefix for pilets
+    url: ""
+
+
+# Database configuration for persisting the data of the feed service. Options are:
+# azure-tablestorage, mongodb, disk, redis, sql (default is disk, if no provider is specified)
+database:
+  provider: "disk"
+  
+  # Configuration for the Azure Table Storage provider
+  azureTableStorage:
+    # Azure storage account
+    account: ""
+    # Key for accessing the storage account
+    key: ""
+    # Prefix to be used for the table names (default: empty)
+    tablePrefix: ""
+    
+  # Configuration for the local disk as database provider
+  disk:
+    # Required. Local (Disk) storage location for the DB
+    location: "./data/db"
+    # Defines the interval to sync back from the disk in seconds (default: 0)
+    syncRate: "0"
+    # Prefix to be used for the file names of the tables (default: empty)
+    filePrefix: ""
+  
+  # Configuration for the Redis as database provider
+  redis:
+    # Host address for the Redis DB provider
+    host: ""
+    # Password for connecting to Redis
+    password: ""
+    # Port for the Redis connection - default 6380
+    port: "6379"
+    # Connecting using a TLS connection (default: no)
+    useTls: "no"
+    # Prefix for the feed service keys in Redis
+    prefix: "piral"
+
+  # Configuration for the MongoDB as database provider
+  mongodb:
+    # Connection string for accessing the MongoDB
+    connectionString: ""
+    # Prefix for the collection names in the MongoDB
+    prefix: ""
+  
+    # Configuration for the SQL as database provider
+  sql:
+    # The name of the SQL database
+    dbname: ""
+    # The host server of the SQL database (example: 192.168.1.2:3306)
+    host: ""
+    # The username for connecting the SQL database
+    user: ""
+    # Password for connecting to the SQL database
+    password: ""
+    # The type of the SQL database; choices: mysql, mariadb, postgres, mssql (default: mysql)
+    dbtype: ""
+    # Connecting using a TLS connection (default: no)
+    useTls: ""
+    # Prefix for the table names in the SQL database (default: empty)
+    prefix: ""
+    # The location of a CA certificate to use for DB server trust (default: none)
+    caCertLocation: ""
+
+# The feed service will utilize the cache to store entities for faster access
+# Options for the cache are: memory, redis (default: memory)
+cache:
+  provider: "memory"
+  
+  redis:
+    # Host address for the Redis DB provider
+    host: ""
+    # Password for connecting to Redis
+    password: ""
+    # Port for the Redis connection - default 6380
+    port: "6379"
+    # Connecting using a TLS connection (default: no)
+    useTls: "no"
+    # Prefix for the feed service keys in Redis
+    prefix: "piral"
+
+# Example configuration for storing data e.g. in a persistent file share as location,
+# when choosing the 'disk' provider for the file storage and/or database 
+persistence:
+  enabled: false
+  volumeClaimName: data-feed-service
+  storageClass: local
+  accessMode: ReadWriteOnce
+  mountPath: /app/data
+  size: 0.5Gi
+
+  # Example for creating a local volume on a single host installation as persistent volume.
+  # The volume should be created as required for the given hosting environment, e.g. NFS share or Azure File Share.
+  # The user set in the security context must have read/write permissions on the volume.
+  localVolume:
+    enabled: false
+    name: volume-feed-service
+    storageClass: local
+    accessMode: ReadWriteOnce
+    hostPath: /mnt/feed-service-data
+    size: 1Gi
+
+# Settings for the portal UI frontend
+# Remark: unused settings for the portal config should be commented so that they are not set.
+portalConfig:
+  # Primary color in the UI (optional, default: #56aa1c)
+  PIRAL_UI_PRIMARY_COLOR: "#56aa1c"
+  # Secondary color in the UI (optional, default: #78bb49) 
+  PIRAL_UI_SECONDARY_COLOR: "#78bb49"
+  # Font color in the UI (optional, default: #101010)
+  PIRAL_UI_FONT_COLOR: "#101010"
+  # Color of semi-transparent text (default: hsla(0,2%,55%,.7))
+  PIRAL_UI_FADED_COLOR: "hsla(0,2%,55%,.7)"
+  # Background color for standard text (default: #fbfbfb)
+  PIRAL_UI_BACKGROUND_COLOR: "#fbfbfb"
+  # Font color in high-contrast scenarios (default: #ffffff)
+  PIRAL_UI_CONTRAST_COLOR: "#ffffff"
+  # Shadow color to be used (default: #f2f2f2)
+  PIRAL_UI_SHADOW_COLOR: "#f2f2f2"
+  # Path to a logo for the UI (optional, example: /media/logo.png)
+  # PIRAL_UI_LOGO_PATH: ""
+  # API key for the portal's intrinsic pilet feed ("cloud") (example: abc)
+  # PIRAL_UI_FEED_API_KEY: ""
+  # Shows the cookie consent dialog; choices on, off (default: off)
+  PIRAL_UI_SHOW_CONSENT: "off"
+  # Disables the UI module/endpoint; choices on, off (default: off)
+  PIRAL_UI_DISABLED: "off"
+  # URL of the service's web management portal (default: value of PIRAL_PUBLIC_URL)
+  # PIRAL_PORTAL_URL: "http://localhost:9000"
+
+# Extended configuration settings
+# Remark: unused settings for the portal config should be commented so that they are not set.
+extendedConfig:
+  # Defines the instance's operation mode, choices: auto, primary, replica, readonly (default: auto)
+  PIRAL_SERVICE_MODE: "auto"
+  
+  # Default feed if not explicitly specified (optional, default: sample)
+  PIRAL_DEFAULT_FEED_NAME: "sample"
+
+  # Default API key that never expires (optional, default: <none>)
+  # PIRAL_DEFAULT_API_KEY: ""
+
+  # Maximum size of the publish payload in MB (optional, default: 32)
+  PIRAL_PUBLISH_MAX_SIZE_MB: 32
+
+  # Maximum size of the POST/PUT request payload in MB (optional, default: 32)
+  # PIRAL_PAYLOAD_MAX_SIZE_MB: 32
+
+  # Sets what to do when invalid meta (e.g., "piletRules") have been provided (optional, default: "ignore")
+  PIRAL_PUBLISH_INVALID_META: "ignore"
+
+  # Source directory with custom rule modules as js files (optional, default: <none>)
+  # PIRAL_RULES_SOURCE_DIR: "rules"
+
+  # Sets the source directory for the pilet generators, if any (default: none)
+  # PIRAL_GENERATOR_SOURCE_DIR: ""
+
+  # Sets if standard users can create feeds by default; choices: yes, no (default: yes)
+  # PIRAL_USERS_CAN_CREATE_FEED: "yes"
+
+  # Sets if standard users can use fuzzy search to find other users; choices: yes, no (default: yes)
+  # PIRAL_USERS_CAN_QUERY_USERS: "yes"
+
+  # Sets if the files of a pilet are kept when the pilet is deleted: yes, no (default: no)
+  # PIRAL_PILET_KEEP_FILES: "no"

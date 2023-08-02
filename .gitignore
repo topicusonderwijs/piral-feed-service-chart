@@ -1,0 +1,12 @@
+# OS files
+.DS_STORE
+
+# Editor files
+.idea
+.vscode
+*.sublime-project
+*.sublime-workspace
+
+coverage
+.cache
+.nyc_output

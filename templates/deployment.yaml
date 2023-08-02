@@ -1,0 +1,99 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "feed-service.fullname" . }}
+  labels:
+    {{- include "feed-service.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "feed-service.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:   
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
+      {{- with .Values.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "feed-service.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "feed-service.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.globalConfig.httpPort | default 9000 }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /status
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /status
+              port: http
+          envFrom:
+            - configMapRef:
+                name: {{ template "feed-service.fullname" . }}-env
+            - secretRef:
+                name: {{ template "feed-service.fullname" . }}-secret
+            {{- if .Values.license.existingSecret }}
+            - secretRef:              
+                name: "{{ .Values.license.existingSecret }}"
+            {{- end }}
+            {{- if .Values.authentication.local.passwordSecret }}
+            - secretRef:              
+                name: "{{ .Values.authentication.local.passwordSecret }}"
+            {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          {{- if .Values.persistence.enabled }}
+          volumeMounts:
+          - mountPath: {{ .Values.persistence.mountPath }}
+            name: volume-feed-service
+          {{- end }}
+      {{- if and (.Values.persistence.enabled) (.Values.persistence.localVolume.enabled) }}
+      initContainers:
+      - name: {{ .Chart.Name }}-init
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        command: ["sh","-c", "chown {{ .Values.securityContext.runAsUser }}:{{ .Values.securityContext.runAsGroup }} {{ .Values.persistence.mountPath }}"]
+        securityContext:
+          runAsNonRoot: false
+          runAsUser: 0
+        volumeMounts:
+        - mountPath: {{ .Values.persistence.mountPath }}
+          name: volume-feed-service
+      {{- end }}
+      {{ if .Values.persistence.enabled }}
+      volumes:
+        - name: volume-feed-service
+          persistentVolumeClaim:
+            claimName: {{ .Values.persistence.volumeClaimName }}
+      {{ end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

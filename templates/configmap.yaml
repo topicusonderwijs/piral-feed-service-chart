@@ -1,0 +1,322 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "feed-service.fullname" . }}-env
+  labels:
+    app: {{ template "feed-service.name" . }}
+    chart: {{ template "feed-service.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+    {{- include "feed-service.labels" . | nindent 4 }}
+data:
+  ## --------------------
+  ## License Configuration
+  ## --------------------
+  {{- if (.Values.license.renewal) }}
+  PIRAL_LICENSE_RENEWAL: "{{ .Values.license.renewal  }}"
+  {{- end }}
+  {{- if (.Values.license.renewalProxy) }}
+  PIRAL_LICENSE_RENEWAL_PROXY: "{{ .Values.license.renewalProxy  }}"
+  {{- end }}
+  
+
+  ## --------------------
+  ## Global Configuration
+  ## --------------------
+  PIRAL_PUBLIC_URL: "{{ required "Please provide a public url" .Values.globalConfig.publicUrl }}"
+  {{- if (.Values.globalConfig.httpPort) }}
+  PIRAL_HTTP_PORT: "{{ .Values.globalConfig.httpPort }}"
+  {{- end }}
+  {{- if (.Values.globalConfig.port) }}
+  PORT: "{{ .Values.globalConfig.port }}"
+  {{- end }}
+  {{- if (.Values.globalConfig.logLevel) }}
+  PIRAL_LOG_LEVEL: "{{ .Values.globalConfig.logLevel }}"
+  {{- end }}
+  {{- if (.Values.globalConfig.logColors) }}
+  PIRAL_LOG_COLORS: "{{ .Values.globalConfig.logColors }}"
+  {{- end }}
+  {{- if (.Values.globalConfig.auditHandler) }}
+  PIRAL_AUDIT_HANDLER: "{{ .Values.globalConfig.auditHandler }}"
+  {{- end }}
+
+  ## --------------------
+  ## Authentication
+  ## --------------------
+  {{- if (.Values.authentication.provider) }}
+  PIRAL_AUTH: "{{ .Values.authentication.provider }}"
+  {{- end }}
+
+  ## Local Authentication
+  {{- if (eq .Values.authentication.provider "local") }}
+  {{- if (.Values.authentication.local.username) }}
+  PIRAL_AUTH_LOCAL_USER: "{{ .Values.authentication.local.username }}"
+  {{- end }}
+  {{- end }}
+
+  ## Microsoft Authentication
+  {{- if (eq .Values.authentication.provider "microsoft") }}
+  PIRAL_AUTH_MICROSOFT_ADMIN_EMAIL: "{{ required "Please provide an admin email for Microsoft authentication provider" .Values.authentication.microsoft.adminEmail }}"
+  {{- if (.Values.authentication.microsoft.applicationId) }}
+  PIRAL_AUTH_MICROSOFT_APPLICATIONID:  "{{ .Values.authentication.microsoft.applicationId }}"
+  {{- end }}
+  {{- if (.Values.authentication.microsoft.authorityUrl) }}
+  PIRAL_AUTH_MICROSOFT_AUTHORITYURL: "{{ .Values.authentication.microsoft.authorityUrl }}"
+  {{- end }}
+  {{- if (.Values.authentication.microsoft.openAccess) }}
+  PIRAL_AUTH_MICROSOFT_OPEN_ACCESS: "{{ .Values.authentication.microsoft.openAccess }}"
+  {{- end }}
+  {{- if (.Values.authentication.microsoft.scope) }}
+  PIRAL_AUTH_MICROSOFT_SCOPE :  "{{ .Values.authentication.microsoft.scope }}"
+  {{- end }}
+  {{- if (.Values.authentication.microsoft.lowercaseId ) }}
+  PIRAL_AUTH_MICROSOFT_LOWERCASE_ID: "{{ .Values.authentication.microsoft.lowercaseId }}"
+  {{- end }}  
+  {{- end }}
+
+  ## Generic OAuth2
+  {{- if (eq .Values.authentication.provider "oauth2") }}  
+  PIRAL_AUTH_OAUTH2_CLIENTID: "{{ required "Please provide a client id for the OAuth2 provider" .Values.authentication.oauth2.clientId }}"
+  PIRAL_AUTH_OAUTH2_AUTHORIZATIONURL: "{{ required "Please provide the authorization URL of the issuer" .Values.authentication.oauth2.authorizationUrl }}"
+  PIRAL_AUTH_OAUTH2_TOKENURL: "{{ required "Please provide the token URL of the issuer" .Values.authentication.oauth2.tokenUrl }}"
+  PIRAL_AUTH_OAUTH2_KEY: "{{ required "Please provide the verification key" .Values.authentication.oauth2.oauth2Key }}"
+  PIRAL_AUTH_OAUTH2_ADMIN_ID: "{{ required "Please provide the user ID for administrative access" .Values.authentication.oauth2.adminId }}"
+  {{- if (.Values.authentication.oauth2.idClaim ) }}
+  PIRAL_AUTH_OAUTH2_IDCLAIM: "{{ .Values.authentication.oauth2.idClaim }}"
+  {{- end }}    
+  {{- if (.Values.authentication.oauth2.scope ) }}
+  PIRAL_AUTH_OAUTH2_SCOPE: "{{ .Values.authentication.oauth2.scope }}"
+  {{- end }}
+  {{- if (.Values.authentication.oauth2.logoutUrl ) }}
+  PIRAL_AUTH_OAUTH2_LOGOUTURL: "{{ .Values.authentication.oauth2.logoutUrl }}"
+  {{- end }}
+  {{- if (.Values.authentication.oauth2.openAccess ) }}
+  PIRAL_AUTH_OAUTH2_OPEN_ACCESS: "{{ .Values.authentication.oauth2.openAccess }}"
+  {{- end }}
+  {{- if (.Values.authentication.oauth2.lowercaseId ) }}
+  PIRAL_AUTH_OAUTH2_LOWERCASE_ID: "{{ .Values.authentication.oauth2.lowercaseId }}"
+  {{- end }}  
+  {{- end }}
+
+  ## Generic OIDC
+  {{- if (eq .Values.authentication.provider "oidc") }}  
+  PIRAL_AUTH_OIDC_CLIENTID: "{{ required "Please provide the OIDC client ID" .Values.authentication.oidc.clientId }}"
+  PIRAL_AUTH_OIDC_CONFIGURL: "{{ required "Please provide the OIDC configuration URL" .Values.authentication.oidc.configUrl }}"
+  PIRAL_AUTH_OIDC_ADMIN_ID: "{{ required "Please provide the OIDC user ID for administrative access" .Values.authentication.oidc.adminId }}"
+  {{- if (.Values.authentication.oidc.queryParams ) }}
+  PIRAL_AUTH_OIDC_QUERYPARAMS: "{{ .Values.authentication.oidc.queryParams }}"
+  {{- end }}
+  {{- if (.Values.authentication.oidc.logoutUrl ) }}
+  PIRAL_AUTH_OIDC_LOGOUTURL: "{{ .Values.authentication.oidc.logoutUrl }}"
+  {{- end }}
+  {{- if (.Values.authentication.oidc.openAccess ) }}
+  PIRAL_AUTH_OIDC_OPEN_ACCESS: "{{ .Values.authentication.oidc.openAccess }}"
+  {{- end }}
+  {{- if (.Values.authentication.oidc.openAccess ) }}
+  PIRAL_AUTH_OIDC_LOWERCASE_ID: "{{ .Values.authentication.oidc.lowercaseId }}"
+  {{- end }}
+  {{- end }}
+  
+  ##  Generic LDAP
+  {{- if (eq .Values.authentication.provider "ldap") }}  
+  PIRAL_AUTH_LDAP_SERVER: "{{ required "Please provide the LDAP server" .Values.authentication.ldap.server }}"
+  PIRAL_AUTH_LDAP_ADMIN_ID:  "{{ required "Please provide the LDAP client ID" .Values.authentication.ldap.adminId }}"
+  {{- if (.Values.authentication.ldap.cacheUsers ) }}
+  PIRAL_AUTH_LDAP_CACHEUSERS: "{{ .Values.authentication.ldap.cacheUsers }}"
+  {{- end }}
+  {{- if (.Values.authentication.ldap.bindCredentials ) }}
+  PIRAL_AUTH_LDAP_BINDCREDENTIALS: "{{ .Values.authentication.ldap.bindCredentials }}"
+  {{- end }}
+  {{- if (.Values.authentication.ldap.bindDn ) }}
+  PIRAL_AUTH_LDAP_BINDDN: "{{ .Values.authentication.ldap.bindDn }}"
+  {{- end }}
+  {{- if (.Values.authentication.ldap.searchAttributes ) }}
+  PIRAL_AUTH_LDAP_SEARCHATTRIBUTES: "{{ .Values.authentication.ldap.searchAttributes }}"
+  {{- end }}
+  {{- if (.Values.authentication.ldap.searchFilter ) }}
+  PIRAL_AUTH_LDAP_SEARCHFILTER: "{{ .Values.authentication.ldap.searchFilter }}"
+  {{- end }}
+  {{- if (.Values.authentication.ldap.searchBase ) }}
+  PIRAL_AUTH_LDAP_SEARCHBASE: "{{ .Values.authentication.ldap.searchBase }}"
+  {{- end }}
+  {{- if (.Values.authentication.ldap.openAccess ) }}
+  PIRAL_AUTH_LDAP_OPEN_ACCESS: "{{ .Values.authentication.ldap.openAccess }}"
+  {{- end }}
+  {{- if (.Values.authentication.ldap.lowercaseId ) }}
+  PIRAL_AUTH_LDAP_LOWERCASE_ID: "{{ .Values.authentication.ldap.lowercaseId }}"
+  {{- end }}
+  {{- end }}
+
+  ## Generic SAML
+  {{- if (eq .Values.authentication.provider "saml") }}  
+  PIRAL_AUTH_SAML_CERT: "{{ required "Please provide the SAML certificate" .Values.authentication.saml.cert }}"
+  PIRAL_AUTH_SAML_ISSUER: "{{ required "Please provide the SAML issuer" .Values.authentication.saml.issuer }}"
+  PIRAL_AUTH_SAML_ENTRYPOINT: "{{ required "Please provide the SAML URL to use for the SSO" .Values.authentication.saml.entrypoint }}"
+  PIRAL_AUTH_SAML_ADMIN_ID: "{{ required "Please provide the SAML user id used for administrative access" .Values.authentication.saml.adminId }}"
+  {{- if (.Values.authentication.saml.exitpoint ) }}
+  PIRAL_AUTH_SAML_EXITPOINT: "{{ .Values.authentication.saml.exitpoint }}"
+  {{- end }}
+  {{- if (.Values.authentication.saml.identifierFormat ) }}
+  PIRAL_AUTH_SAML_IDENTIFIERFORMAT: "{{ .Values.authentication.saml.identifierFormat }}"
+  {{- end }}
+  {{- if (.Values.authentication.saml.authnContext ) }}
+  PIRAL_AUTH_SAML_AUTHNCONTEXT: "{{ .Values.authentication.saml.authnContext }}"
+  {{- end }}
+  {{- if (.Values.authentication.saml.openAccess ) }}
+  PIRAL_AUTH_SAML_OPEN_ACCESS: "{{ .Values.authentication.saml.openAccess }}"
+  {{- end }}
+  {{- if (.Values.authentication.saml.lowercaseId ) }}
+  PIRAL_AUTH_SAML_LOWERCASE_ID: "{{ .Values.authentication.saml.lowercaseId }}"
+  {{- end }}
+  {{- end }}
+
+  ## --------------------
+  ## File Storage
+  ## --------------------
+  PIRAL_FS: "{{ required "Please specify file storage provider" .Values.fileStorage.provider }}"
+  {{- if (eq .Values.fileStorage.provider "disk") }}
+  PIRAL_FS_DISK_LOCATION: "{{ required "Disk location for file storage is required" .Values.fileStorage.disk.location }}"
+  {{- end }}
+
+  ## Azure Blob Storage
+  {{- if (eq .Values.fileStorage.provider "azure-blobstorage") }}
+  PIRAL_FS_BLOB_STORAGE_ACCOUNT: "{{ required "Azure Blob Storage Account is required" .Values.fileStorage.azureBlobStorage.account }}"
+  {{- if (.Values.fileStorage.azureBlobStorage.containerName) }}
+  PIRAL_FS_BLOB_STORAGE_CONTAINER_NAME: "{{ .Values.fileStorage.azureBlobStorage.containerName }}"
+  {{- end }}
+  {{- if (.Values.fileStorage.azureBlobStorage.url) }}
+  PIRAL_FS_BLOB_STORAGE_URL: "{{ .Values.fileStorage.azureBlobStorage.url }}"
+  {{- end }}
+  {{- if (.Values.fileStorage.azureBlobStorage.pathPrefix) }}
+  PIRAL_FS_BLOB_STORAGE_PATH_PREFIX: "{{ .Values.fileStorage.azureBlobStorage.pathPrefix }}"
+  {{- end }}
+  {{- end }}
+
+  ## AWS-S3 Storage
+  {{- if (eq .Values.fileStorage.provider "aws-s3") }}
+  PIRAL_FS_S3_STORAGE_ACCESS_ID: "{{ required "AWS Storage Access ID is required" .Values.fileStorage.awsS3.accessId }}"
+  PIRAL_FS_S3_STORAGE_REGION: "{{ required "AWS Storage Region is required" .Values.fileStorage.awsS3.region }}"
+  {{- if (.Values.fileStorage.awsS3.bucketName) }}
+  PIRAL_FS_S3_STORAGE_BUCKET_NAME: "{{ .Values.fileStorage.awsS3.bucketName }}"
+  {{- end }}
+  {{- if (.Values.fileStorage.awsS3.url) }}
+  PIRAL_FS_S3_STORAGE_URL: "{{ .Values.fileStorage.awsS3.url }}"
+  {{- end }}
+  {{- end }}
+
+## DigitalOcean Spaces Storage
+  {{- if (eq .Values.fileStorage.provider "do-spaces") }}
+  PIRAL_FS_DO_SPACES_ACCESS_ID: "{{ required "DigitalOcean Spaces Access ID is required" .Values.fileStorage.doSpaces.accessId }}"
+  {{- if (.Values.fileStorage.doSpaces.bucketName) }}
+  PIRAL_FS_DO_SPACES_NAME: "{{ .Values.fileStorage.doSpaces.name }}"
+  {{- end }}
+  {{- if (.Values.fileStorage.doSpaces.url) }}
+  PIRAL_FS_DO_SPACES_URL: "{{ .Values.fileStorage.doSpaces.url }}"
+  {{- end }}
+  {{- end }}
+
+  ## Google Cloud Storage
+  {{- if (eq .Values.fileStorage.provider "google-storage") }}
+  PIRAL_FS_GC_STORAGE_PROJECT_ID: "{{ required "Google Cloud project ID is required" .Values.fileStorage.googleCloudStorage.projectId }}"
+  PIRAL_FS_GC_STORAGE_CLIENT_EMAIL: "{{ required "Google Cloud client email is required" .Values.fileStorage.googleCloudStorage.clientEmail }}"
+  {{- if (.Values.fileStorage.googleCloudStorage.bucketName) }}
+  PIRAL_FS_GC_STORAGE_BUCKET_NAME: "{{ .Values.fileStorage.googleCloudStorage.bucketName }}"
+  {{- end }}
+  {{- if (.Values.fileStorage.googleCloudStorage.url) }}
+  PIRAL_FS_GC_STORAGE_URL: "{{ .Values.fileStorage.googleCloudStorage.url }}"
+  {{- end }}
+  {{- end }}
+
+
+  ## --------------------
+  ## Database
+  ## --------------------
+  PIRAL_DB: "{{ .Values.database.provider }}"
+  ## Local disk 
+  {{- if (eq .Values.database.provider "disk") }}
+  PIRAL_DB_DISK_LOCATION: "{{ required "Disk location for database is required" .Values.database.disk.location }}"
+  {{- if (.Values.database.disk.syncRate ) }}
+  PIRAL_DB_DISK_SYNC_RATE: "{{ .Values.database.disk.syncRate }}" 
+  {{- end }}
+  {{- if (.Values.database.disk.filePrefix ) }}
+  PIRAL_DB_DISK_FILE_PREFIX: "{{ .Values.database.disk.filePrefix }}" 
+  {{- end }}
+  {{- end }}
+
+  ## Azure Table Storage
+  {{- if (eq .Values.database.provider "azure-tablestorage") }}
+  PIRAL_DB_TABLE_STORAGE_ACCOUNT: "{{ required "Azure Table Storage Account is required" .Values.database.azureTableStorage.account }}"
+  {{- if (.Values.database.azureTableStorage.tablePrefix ) }}
+  PIRAL_DB_TABLE_STORAGE_TABLE_PREFIX: "{{ .Values.database.azureTableStorage.tablePrefix }}"
+  {{- end }}
+  {{- end }}
+
+  ## Redis
+  {{- if (eq .Values.database.provider "redis") }}
+  PIRAL_DB_REDIS_HOST: "{{ required "Please provide the host for the Redis database" .Values.database.redis.host }}"
+  {{- if (.Values.database.redis.port ) }}
+  PIRAL_DB_REDIS_PORT: "{{ .Values.database.redis.port }}"
+  {{- end }}
+  {{- if (.Values.database.redis.useTls ) }}
+  PIRAL_DB_REDIS_USE_TLS: "{{ .Values.database.redis.useTls }}"
+  {{- end }}
+  {{- if (.Values.database.redis.prefix ) }}
+  PIRAL_DB_REDIS_PREFIX: "{{ .Values.database.redis.prefix }}"
+  {{- end }}
+  {{- end }}
+  ## MongoDB
+  {{- if (eq .Values.database.provider "mongodb") }}
+  {{- if (.Values.database.mongodb.prefix ) }}
+  PIRAL_DB_MONGO_COLLECTION_PREFIX: "{{ .Values.database.mongodb.prefix }}"
+  {{- end }}
+  {{- end }}
+  ## SQL
+  {{- if (eq .Values.database.provider "sql") }}
+  PIRAL_DB_SQL_NAME: "{{ required "Please provide the name for the SQL database" .Values.database.sql.dbname }}"
+  PIRAL_DB_SQL_HOST: "{{ required "Please provide the host for the SQL database" .Values.database.sql.host }}"
+  PIRAL_DB_SQL_USER: "{{ required "Please provide the user name for accessing the SQL database" .Values.database.sql.user }}"
+  {{- if (.Values.database.sql.dbtype ) }}
+  PIRAL_DB_SQL_TYPE: "{{ .Values.database.sql.dbtype }}"
+  {{- end }}
+  {{- if (.Values.database.sql.prefix ) }}
+  PIRAL_DB_SQL_TABLE_PREFIX: "{{ .Values.database.sql.prefix }}"
+  {{- end }}
+  {{- if (.Values.database.sql.useTls ) }}
+  PIRAL_DB_SQL_USE_TLS: "{{ .Values.database.sql.useTls }}"
+  {{- end }}
+  {{- if (.Values.database.sql.caCertLocation ) }}
+  PIRAL_DB_SQL_CA: "{{ .Values.database.sql.caCertLocation }}"
+  {{- end }}
+  {{- end }}
+
+  ## -----------------------
+  ## Cache
+  ## -----------------------
+  PIRAL_CACHE: "{{ .Values.cache.provider }}"
+    ## Redis
+  {{- if (eq .Values.cache.provider "redis") }}
+  PIRAL_CACHE_REDIS_HOST: "{{ required "Please provide the host for the Redis database" .Values.cache.redis.host }}"
+  {{- if (.Values.cache.redis.port ) }}
+  PIRAL_CACHE_REDIS_PORT: "{{ .Values.cache.redis.port }}"
+  {{- end }}
+  {{- if (.Values.cache.redis.useTls ) }}
+  PIRAL_CACHE_REDIS_USE_TLS: "{{ .Values.cache.redis.useTls }}"
+  {{- end }}
+  {{- if (.Values.cache.redis.prefix ) }}
+  PIRAL_CACHE_REDIS_PREFIX: "{{ .Values.cache.redis.prefix }}"
+  {{- end }}
+  {{- end }}
+
+  ## -----------------------
+  ## Portal UI configuration
+  ## -----------------------
+  {{- range $key, $value := .Values.portalConfig }}
+  {{ $key }}: {{ $value | quote }}
+  {{- end }}
+
+  ## -----------------------
+  ## Extended configuration
+  ## -----------------------
+  {{- range $key, $value := .Values.extendedConfig }}
+  {{ $key }}: {{ $value | quote }}
+  {{- end }}
