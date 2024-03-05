@@ -36,6 +36,9 @@ data:
   {{- if (.Values.globalConfig.logColors) }}
   PIRAL_LOG_COLORS: "{{ .Values.globalConfig.logColors }}"
   {{- end }}
+  {{- if (.Values.globalConfig.logFormat) }}
+  PIRAL_LOG_FORMAT: "{{ .Values.globalConfig.logFormat }}"
+  {{- end }}
   {{- if (.Values.globalConfig.auditHandler) }}
   PIRAL_AUDIT_HANDLER: "{{ .Values.globalConfig.auditHandler }}"
   {{- end }}
@@ -304,6 +307,33 @@ data:
   {{- end }}
   {{- if (.Values.cache.redis.prefix ) }}
   PIRAL_CACHE_REDIS_PREFIX: "{{ .Values.cache.redis.prefix }}"
+  {{- end }}
+  {{- end }}
+
+  ## -----------------------
+  ## Notification configuration
+  ## -----------------------
+  {{- if (.Values.notifications.provider) }}
+  PIRAL_NOTIFICATION: "{{ .Values.notifications.provider }}"
+  {{- end }}
+  ## SMTP
+  {{- if (eq .Values.notifications.provider "smtp") }}
+  PIRAL_NOTIFICATION_SMTP_HOST: "{{ required "Please provide the host name of the SMTP service" .Values.notifications.smtp.host }}"
+  PIRAL_NOTIFICATION_SMTP_AUTH_USER: "{{ required "Please provide the name of the SMTP service user" .Values.notifications.smtp.user }}"
+  {{- if (.Values.notifications.smtp.port )}}
+  PIRAL_NOTIFICATION_SMTP_PORT: "{{ .Values.notifications.smtp.port }}"
+  {{- end }}
+  {{- if (.Values.notifications.smtp.secure) }}
+  PIRAL_NOTIFICATION_SMTP_SECURE: "{{ .Values.notifications.smtp.secure }}"
+  {{- end }}
+  {{- if (.Values.notifications.smtp.sender) }}
+  PIRAL_NOTIFICATION_SMTP_SENDER: "{{ .Values.notifications.smtp.sender }}"
+  {{- end }}
+  {{- end }}
+  ## SendGrid
+  {{- if (eq .Values.notifications.provider "sendgrid") }}
+  {{- if (.Values.notifications.sendgrid.sender) }}
+  PIRAL_NOTIFICATION_SENDGRID_SENDER: "{{ .Values.notifications.sendgrid.sender }}"
   {{- end }}
   {{- end }}
 

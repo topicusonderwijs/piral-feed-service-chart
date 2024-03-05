@@ -8,7 +8,7 @@ image:
   repository: piral.azurecr.io/piral-feed-service
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "v1.11.0"
+  tag: "v1.13.3"
 
 # Configure the secret, which contains the credentials for the container registry.
 # For creating the image pull secret please visit:
@@ -113,6 +113,9 @@ globalConfig:
 
   # Sets if colors should be used (optional, default: "on") 
   logColors: "off"
+
+  # Sets the logging format; choice logstash, json, plain (default: logstash)
+  logFormat: "logstash"
 
   # The audit handler to use (optional, default: "none"); choices: "none", "local"
   auditHandler: "none"
@@ -413,6 +416,36 @@ cache:
     useTls: "no"
     # Prefix for the feed service keys in Redis
     prefix: "piral"
+
+
+
+# Configuration for notifications
+notifications:
+  # The notification provider to be used (default: none)
+  provider: ""
+  
+  # Configuration for the SMTP provider
+  smtp:
+    # Host name of the SMTP service (example: smtp.host.com)
+    host: ""
+    # Port of the SMTP service (default: 25)
+    port: "25"
+    # Determines if TLS/STARTTLS should be used; choices on, off (default: off)
+    secure: "off"
+    # Sets the name of the SMTP service user (example: user@host.com)
+    user: ""
+    # Sets the password of the SMTP service user (default: nothing)
+    password: ""
+    # Email address for the notifications (default: noreply@piral.cloud)
+    sender: "noreply@piral.cloud"
+
+  # Configuration for the SendGrid provider
+  sendgrid:
+    # API key for using SendGrid (example: SG.ABc_00-1234.ABcd1234)
+    apiKey: ""
+    # Email address for the notifications (default: noreply@piral.cloud)
+    sender: "noreply@piral.cloud"
+
 
 # Example configuration for storing data e.g. in a persistent file share as location,
 # when choosing the 'disk' provider for the file storage and/or database 
