@@ -8,7 +8,7 @@ image:
   repository: piral.azurecr.io/piral-feed-service
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "v1.13.3"
+  tag: "v1.13.4"
 
 # Configure the secret, which contains the credentials for the container registry.
 # For creating the image pull secret please visit:
@@ -297,7 +297,7 @@ fileStorage:
 
   # Configuration for the local disk as file storage provider
   disk:
-    location: "./data/fs"
+    location: "/app/data"
 
   # Configuration for AWS S3
   awsS3:
@@ -355,7 +355,7 @@ database:
   # Configuration for the local disk as database provider
   disk:
     # Required. Local (Disk) storage location for the DB
-    location: "./data/db"
+    location: "/app/data"
     # Defines the interval to sync back from the disk in seconds (default: 0)
     syncRate: "0"
     # Prefix to be used for the file names of the tables (default: empty)
