@@ -531,3 +531,24 @@ extendedConfig:
 
   # Sets if the files of a pilet are kept when the pilet is deleted: yes, no (default: no)
   # PIRAL_PILET_KEEP_FILES: "no"
+
+
+
+#########################################
+## Custom code for Topicus deployment  ##
+#########################################
+topicus:
+  secretStore: parnassys
+  externalSecrets:
+    licenseKey:
+      record: <keyhub-uuid-here>
+      mappings:
+        password: PIRAL_LICENSE_KEY
+    localAuth:
+      record: <keyhub-uuid-here>
+      mappings:
+        password: PIRAL_AUTH_LOCAL_PASS
+  imagePullSecret:
+    secretName: piral-pull-secret
+    keyhubUuid: <keyhub-uuid-here>
+    
