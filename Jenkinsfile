@@ -25,7 +25,7 @@ node() {
        helm.upload {
            stage = "publish"
            // path is the dir in helm-local on artifactory
-           path = "par-ticle/piral-feed-service"
+           path = "par-ticle/feed-service"
        }
     }
 
