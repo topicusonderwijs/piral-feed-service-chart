@@ -61,6 +61,9 @@ data:
   {{- if (.Values.authentication.local.username) }}
   PIRAL_AUTH_LOCAL_USER: "{{ .Values.authentication.local.username }}"
   {{- end }}
+  {{- if (.Values.authentication.local.passAlg) }}
+  PIRAL_AUTH_LOCAL_PASS_ALG: "{{ .Values.authentication.local.passAlg }}"
+  {{- end }}
   {{- end }}
 
   ## Microsoft Authentication
@@ -80,7 +83,13 @@ data:
   {{- end }}
   {{- if (.Values.authentication.microsoft.lowercaseId ) }}
   PIRAL_AUTH_MICROSOFT_LOWERCASE_ID: "{{ .Values.authentication.microsoft.lowercaseId }}"
-  {{- end }}  
+  {{- end }}
+  {{- if (.Values.authentication.microsoft.lowercaseEmail ) }}
+  PIRAL_AUTH_MICROSOFT_LOWERCASE_EMAIL: "{{ .Values.authentication.microsoft.lowercaseEmail }}"
+  {{- end }}
+  {{- if (.Values.authentication.microsoft.clientSecret ) }}
+  PIRAL_AUTH_MICROSOFT_CLIENTSECRET: "{{ .Values.authentication.microsoft.clientSecret }}"
+  {{- end }}
   {{- end }}
 
   ## Generic OAuth2
@@ -176,6 +185,9 @@ data:
   {{- end }}
   {{- if (.Values.authentication.saml.lowercaseId ) }}
   PIRAL_AUTH_SAML_LOWERCASE_ID: "{{ .Values.authentication.saml.lowercaseId }}"
+  {{- end }}
+  {{- if (.Values.authentication.saml.checkAssertions ) }}
+  PIRAL_AUTH_SAML_CHECK_ASSERTIONS: "{{ .Values.authentication.saml.checkAssertions }}"
   {{- end }}
   {{- end }}
 

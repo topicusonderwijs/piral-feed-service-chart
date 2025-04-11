@@ -139,6 +139,10 @@ authentication:
     # As alternative to providing the username and password directly in this values file,
     # you can specify the name of the K8s secret if it exists already or is created outside of this deployment.
     passwordSecret: ""
+    # The algorithm used for transporting the password of the local admin. 
+    # For "plain" you just store the password in the environment variable. For "sha256" you compute the SHA256 hash of the password and store the base64 representation in the environment variable.
+    # (default: plain)
+    passAlg: "plain"
   
   # Configuration details for the Microsoft authentication provider.
   # Required settings are: tenantId, clientId and adminEmail
@@ -156,6 +160,8 @@ authentication:
     authorityUrl: ""
     # The ID of the application created in the Microsoft AD (called "client ID")
     clientId: ""
+    # Azure AD client secret for advanced auth provider capabilities such as an AAD user lookup. (default: empty)
+    clientSecret: ""
     # The tenant id from the Microsoft AD configuration
     tenantId: ""
     # Flag for access restricting the users registered in the Microsoft AD. 
@@ -164,6 +170,8 @@ authentication:
     # The scope used for the client authentication. Default is set to "api://<client-id>/Profile.Read"
     # The scope is set in the Microsoft AD app registration and has a full URI format
     scope: ""
+    # Determines if the user's email should be always considered case-insensitive; choices: yes, no. (default: no)
+    lowercaseEmail: "no"
 
   # Configuration details required for a generic OAuth2 authentication provider    
   # Required settings are: clientId, authorizationUrl, tokenUrl, oauth2Key, and adminId
@@ -283,6 +291,8 @@ authentication:
     # Transform user IDs given by the IdP to be case-insensitive
     # Optional. Choices: yes, no (default: no)
     lowercaseId: "no"
+    # If enabled the assertions in the SAML response will be checked for a valid signature, too; choices: yes, no. (default: no)
+    checkAssertions: "no"
 
 # File storage configuration for persisting the pilets. Options are:
 # azure-blobstorage, aws-s3, do-spaces, disk (default is disk, if no provider is specified)
