@@ -120,6 +120,12 @@ globalConfig:
   # The audit handler to use (optional, default: "none"); choices: "none", "local"
   auditHandler: "none"
 
+  # The URL of a proxy to be used for HTTP requests. This might be needed if your feed service instance cannot communicate with external web services directly.
+  httpProxy: ""
+
+  # The maximum number of retries for the webhook. Uses an exponential backoff for running the retries. (default: 3)
+  webhookMaxRetries: 3
+
 # Specify the authentication provider for the feed service. Options are:
 # microsoft, oauth2, oidc, local, ldap, saml (default is local, if no provider is specified)
 authentication:
@@ -445,6 +451,11 @@ notifications:
     apiKey: ""
     # Email address for the notifications (default: noreply@piral.cloud)
     sender: "noreply@piral.cloud"
+  
+  # Configuration for the ntfy.sh provider
+  ntfy:
+    # The full URL of the topic to be used for sending push notifications via ntfy.sh (default: nothing)
+    url: ""
 
 
 # Example configuration for storing data e.g. in a persistent file share as location,
@@ -475,6 +486,8 @@ portalConfig:
   PIRAL_UI_PRIMARY_COLOR: "#56aa1c"
   # Secondary color in the UI (optional, default: #78bb49) 
   PIRAL_UI_SECONDARY_COLOR: "#78bb49"
+  # Tertiary color in the UI (optional, default #745a13)
+  PIRAL_UI_TERTIARY_COLOR: "#745a13"
   # Font color in the UI (optional, default: #101010)
   PIRAL_UI_FONT_COLOR: "#101010"
   # Color of semi-transparent text (default: hsla(0,2%,55%,.7))
@@ -485,16 +498,28 @@ portalConfig:
   PIRAL_UI_CONTRAST_COLOR: "#ffffff"
   # Shadow color to be used (default: #f2f2f2)
   PIRAL_UI_SHADOW_COLOR: "#f2f2f2"
+  # The danger color to be used in the pages (UI portal, overview page, login, ...). (default: #d61c1c)
+  PIRAL_UI_DANGER_COLOR: "#d61c1c"
+  # The success color to be used in the pages (UI portal, overview page, login, ...). (default: #499e0d)
+  PIRAL_UI_SUCCESS_COLOR: "#499e0d"
+  # The info color to be used in the pages (UI portal, overview page, login, ...). (default: #1d72f3)
+  PIRAL_UI_INFO_COLOR: "#1d72f3"
+  # The warning color to be used in the pages (UI portal, overview page, login, ...). (default: #ffc007)
+  PIRAL_UI_WARNING_COLOR: "#ffc007"
   # Path to a logo for the UI (optional, example: /media/logo.png)
   # PIRAL_UI_LOGO_PATH: ""
   # API key for the portal's intrinsic pilet feed ("cloud") (example: abc)
   # PIRAL_UI_FEED_API_KEY: ""
   # Shows the cookie consent dialog; choices on, off (default: off)
   PIRAL_UI_SHOW_CONSENT: "off"
+  # Shows the homepage in the portal - otherwise the Piral Feed Service redirects to the login directly; choices on, off (default: off)
+  PIRAL_UI_SHOW_HOME: "off"
   # Disables the UI module/endpoint; choices on, off (default: off)
   PIRAL_UI_DISABLED: "off"
   # URL of the service's web management portal (default: value of PIRAL_PUBLIC_URL)
   # PIRAL_PORTAL_URL: "http://localhost:9000"
+  # Sets the key of the session ID field in the cookie (default: sid)
+  PIRAL_COOKIE_SESSION_KEY: "sid"
 
 # Extended configuration settings
 # Remark: unused settings for the portal config should be commented so that they are not set.

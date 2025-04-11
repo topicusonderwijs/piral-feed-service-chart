@@ -42,6 +42,12 @@ data:
   {{- if (.Values.globalConfig.auditHandler) }}
   PIRAL_AUDIT_HANDLER: "{{ .Values.globalConfig.auditHandler }}"
   {{- end }}
+  {{- if (.Values.globalConfig.httpProxy) }}
+  PIRAL_DEFAULT_HTTP_PROXY: "{{ .Values.globalConfig.httpProxy }}"
+  {{- end}}
+  {{- if (.Values.globalConfig.webhookMaxRetries) }}
+  PIRAL_WEBHOOK_MAX_RETRIES: "{{ .Values.globalConfig.webhookMaxRetries }}"
+  {{- end}}
 
   ## --------------------
   ## Authentication
@@ -334,6 +340,12 @@ data:
   {{- if (eq .Values.notifications.provider "sendgrid") }}
   {{- if (.Values.notifications.sendgrid.sender) }}
   PIRAL_NOTIFICATION_SENDGRID_SENDER: "{{ .Values.notifications.sendgrid.sender }}"
+  {{- end }}
+  {{- end }}
+  ## ntfy.sh
+  {{- if (eq .Values.notifications.provider "ntfy") }}
+  {{- if (.Values.notifications.ntfy.url) }}
+  PIRAL_NOTIFICATION_NTFY_URL: "{{ .Values.notifications.ntfy.url }}"
   {{- end }}
   {{- end }}
 
