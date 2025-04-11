@@ -273,12 +273,14 @@ data:
   PIRAL_DB_REDIS_PREFIX: "{{ .Values.database.redis.prefix }}"
   {{- end }}
   {{- end }}
+
   ## MongoDB
   {{- if (eq .Values.database.provider "mongodb") }}
   {{- if (.Values.database.mongodb.prefix ) }}
   PIRAL_DB_MONGO_COLLECTION_PREFIX: "{{ .Values.database.mongodb.prefix }}"
   {{- end }}
   {{- end }}
+
   ## SQL
   {{- if (eq .Values.database.provider "sql") }}
   PIRAL_DB_SQL_NAME: "{{ required "Please provide the name for the SQL database" .Values.database.sql.dbname }}"
@@ -298,11 +300,21 @@ data:
   {{- end }}
   {{- end }}
 
+  ## DynamoDB
+  {{- if (eq .Values.database.provider "aws-dynamodb") }}
+  PIRAL_DB_DYNAMODB_ACCESS_ID: "{{ required "Please provide the Amazon DynamoDB AWS access key ID" .Values.database.dynamoDb.accessId }}"
+  PIRAL_DB_DYNAMODB_ACCESS_KEY: "{{ required "Please provide the Amazon DynamoDB AWS secret access key" .Values.database.dynamoDb.accessKey }}"
+  PIRAL_DB_DYNAMODB_REGION: "{{ required "Please provide the Amazon DynamoDB Region" .Values.database.dynamoDb.region }}"
+  {{- if (.Values.database.sql.prefix ) }}
+  PIRAL_DB_DYNAMODB_TABLE_PREFIX: "{{ .Values.database.dynamoDb.prefix }}"
+  {{- end }}
+  {{- end }}
+
   ## -----------------------
   ## Cache
   ## -----------------------
   PIRAL_CACHE: "{{ .Values.cache.provider }}"
-    ## Redis
+  ## Redis
   {{- if (eq .Values.cache.provider "redis") }}
   PIRAL_CACHE_REDIS_HOST: "{{ required "Please provide the host for the Redis database" .Values.cache.redis.host }}"
   {{- if (.Values.cache.redis.port ) }}
@@ -315,6 +327,20 @@ data:
   PIRAL_CACHE_REDIS_PREFIX: "{{ .Values.cache.redis.prefix }}"
   {{- end }}
   {{- end }}
+  ## Memcache
+  {{- if (eq .Values.cache.provider "memcache") }}
+  PIRAL_CACHE_MEMCACHE_SERVERS: "{{ required "Please provide the Memcache servers" .Values.cache.memcache.servers }}"
+  {{- if (.Values.cache.memcache.port ) }}
+  PIRAL_CACHE_MEMCACHE_AUTH_USER: "{{ .Values.cache.memcache.authUser }}"
+  {{- end }}
+  {{- if (.Values.cache.memcache.useTls ) }}
+  PIRAL_CACHE_MEMCACHE_AUTH_PASS: "{{ .Values.cache.memcache.authPass }}"
+  {{- end }}
+  {{- if (.Values.cache.memcache.prefix ) }}
+  PIRAL_CACHE_MEMCACHE_PREFIX: "{{ .Values.cache.memcache.prefix }}"
+  {{- end }}
+  {{- end }}
+
 
   ## -----------------------
   ## Notification configuration

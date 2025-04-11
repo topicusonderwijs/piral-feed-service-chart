@@ -379,7 +379,7 @@ database:
     useTls: "no"
     # Prefix for the feed service keys in Redis
     prefix: "piral"
-
+  
   # Configuration for the MongoDB as database provider
   mongodb:
     # Connection string for accessing the MongoDB
@@ -406,6 +406,16 @@ database:
     # The location of a CA certificate to use for DB server trust (default: none)
     caCertLocation: ""
 
+  dynamoDb:
+    # Required. The Amazon DynamoDB AWS access key ID.
+    accessId: ""
+    # Required. The Amazon DynamoDB AWS access key.
+    accessKey: ""
+    # Required. The Amazon DynamoDB Region.
+    region: ""
+    # The Amazon DynamoDB prefix for the table names. (default: empty)
+    prefix: ""
+
 # The feed service will utilize the cache to store entities for faster access
 # Options for the cache are: memory, redis (default: memory)
 cache:
@@ -421,6 +431,16 @@ cache:
     # Connecting using a TLS connection (default: no)
     useTls: "no"
     # Prefix for the feed service keys in Redis
+    prefix: "piral"
+
+  memcache:
+    # Required. A comma separated list of [hostname:port] servers for connecting to the Memcache provider.
+    servers: ""
+    # Host access for the Memcache provider (default: nothing)
+    authUser: ""
+    # Host access for the Memcache provider (default: nothing)
+    authPass: ""
+    # Prefix to be used for the Memcache entries (default: piral)
     prefix: "piral"
 
 
