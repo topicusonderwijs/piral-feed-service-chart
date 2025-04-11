@@ -8,7 +8,7 @@ image:
   repository: piral.azurecr.io/piral-feed-service
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "v1.13.4"
+  tag: "v1.16.0"
 
 # Configure the secret, which contains the credentials for the container registry.
 # For creating the image pull secret please visit:

@@ -1,13 +1,13 @@
 # Piral Feed Service Helm Chart
 
-Chart version: `0.4.0`
+Chart version: `0.5.0`
 Status: `beta`
 
 ## Introduction
 
 This chart bootstraps a **Feed Service deployment** to a Kubernetes Cluster using the Helm package manager. The specific configuration values will be added to a config map and will be injected as environment variables into the pod, which executes the Feed Service. The sensitive values are injected via Kubernetes secrets.
 
-**Remark:** This Helm chart version supports version `1.13.4` of the Feed Service.
+**Remark:** This Helm chart version supports version `1.16.0` of the Feed Service.
 
 Additional configuration options can be configured via environment variables, which can be added as required in section `extendedConfig` in the `values.yaml` file.
 
