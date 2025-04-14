@@ -312,7 +312,7 @@ data:
   ## DynamoDB
   {{- if (eq .Values.database.provider "aws-dynamodb") }}
   PIRAL_DB_DYNAMODB_REGION: "{{ required "Please provide the Amazon DynamoDB Region" .Values.database.dynamoDb.region }}"
-  {{- if (.Values.database.sql.prefix ) }}
+  {{- if (.Values.database.dynamoDb.prefix ) }}
   PIRAL_DB_DYNAMODB_TABLE_PREFIX: "{{ .Values.database.dynamoDb.prefix }}"
   {{- end }}
   {{- end }}
