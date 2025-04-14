@@ -123,7 +123,8 @@ globalConfig:
   # The URL of a proxy to be used for HTTP requests. This might be needed if your feed service instance cannot communicate with external web services directly.
   httpProxy: ""
 
-  # The maximum number of retries for the webhook. Uses an exponential backoff for running the retries. (default: 3)
+  # The maximum number of retries that the feed service should attempt when invoking webhook endpoints.
+  # Uses an exponential backoff for running the retries. (default: 3)
   webhookMaxRetries: 3
 
 # Specify the authentication provider for the feed service. Options are:
