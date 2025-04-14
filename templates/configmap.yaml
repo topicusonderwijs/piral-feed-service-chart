@@ -87,9 +87,6 @@ data:
   {{- if (.Values.authentication.microsoft.lowercaseEmail ) }}
   PIRAL_AUTH_MICROSOFT_LOWERCASE_EMAIL: "{{ .Values.authentication.microsoft.lowercaseEmail }}"
   {{- end }}
-  {{- if (.Values.authentication.microsoft.clientSecret ) }}
-  PIRAL_AUTH_MICROSOFT_CLIENTSECRET: "{{ .Values.authentication.microsoft.clientSecret }}"
-  {{- end }}
   {{- end }}
 
   ## Generic OAuth2
@@ -314,8 +311,6 @@ data:
 
   ## DynamoDB
   {{- if (eq .Values.database.provider "aws-dynamodb") }}
-  PIRAL_DB_DYNAMODB_ACCESS_ID: "{{ required "Please provide the Amazon DynamoDB AWS access key ID" .Values.database.dynamoDb.accessId }}"
-  PIRAL_DB_DYNAMODB_ACCESS_KEY: "{{ required "Please provide the Amazon DynamoDB AWS secret access key" .Values.database.dynamoDb.accessKey }}"
   PIRAL_DB_DYNAMODB_REGION: "{{ required "Please provide the Amazon DynamoDB Region" .Values.database.dynamoDb.region }}"
   {{- if (.Values.database.sql.prefix ) }}
   PIRAL_DB_DYNAMODB_TABLE_PREFIX: "{{ .Values.database.dynamoDb.prefix }}"
@@ -342,11 +337,8 @@ data:
   ## Memcache
   {{- if (eq .Values.cache.provider "memcache") }}
   PIRAL_CACHE_MEMCACHE_SERVERS: "{{ required "Please provide the Memcache servers" .Values.cache.memcache.servers }}"
-  {{- if (.Values.cache.memcache.port ) }}
+  {{- if (.Values.cache.memcache.authUser ) }}
   PIRAL_CACHE_MEMCACHE_AUTH_USER: "{{ .Values.cache.memcache.authUser }}"
-  {{- end }}
-  {{- if (.Values.cache.memcache.useTls ) }}
-  PIRAL_CACHE_MEMCACHE_AUTH_PASS: "{{ .Values.cache.memcache.authPass }}"
   {{- end }}
   {{- if (.Values.cache.memcache.prefix ) }}
   PIRAL_CACHE_MEMCACHE_PREFIX: "{{ .Values.cache.memcache.prefix }}"
