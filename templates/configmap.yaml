@@ -42,6 +42,12 @@ data:
   {{- if (.Values.globalConfig.auditHandler) }}
   PIRAL_AUDIT_HANDLER: "{{ .Values.globalConfig.auditHandler }}"
   {{- end }}
+  {{- if (.Values.globalConfig.httpProxy) }}
+  PIRAL_DEFAULT_HTTP_PROXY: "{{ .Values.globalConfig.httpProxy }}"
+  {{- end}}
+  {{- if (.Values.globalConfig.webhookMaxRetries) }}
+  PIRAL_WEBHOOK_MAX_RETRIES: "{{ .Values.globalConfig.webhookMaxRetries }}"
+  {{- end}}
 
   ## --------------------
   ## Authentication
@@ -54,6 +60,9 @@ data:
   {{- if (eq .Values.authentication.provider "local") }}
   {{- if (.Values.authentication.local.username) }}
   PIRAL_AUTH_LOCAL_USER: "{{ .Values.authentication.local.username }}"
+  {{- end }}
+  {{- if (.Values.authentication.local.passAlg) }}
+  PIRAL_AUTH_LOCAL_PASS_ALG: "{{ .Values.authentication.local.passAlg }}"
   {{- end }}
   {{- end }}
 
@@ -74,7 +83,10 @@ data:
   {{- end }}
   {{- if (.Values.authentication.microsoft.lowercaseId ) }}
   PIRAL_AUTH_MICROSOFT_LOWERCASE_ID: "{{ .Values.authentication.microsoft.lowercaseId }}"
-  {{- end }}  
+  {{- end }}
+  {{- if (.Values.authentication.microsoft.lowercaseEmail ) }}
+  PIRAL_AUTH_MICROSOFT_LOWERCASE_EMAIL: "{{ .Values.authentication.microsoft.lowercaseEmail }}"
+  {{- end }}
   {{- end }}
 
   ## Generic OAuth2
@@ -170,6 +182,9 @@ data:
   {{- end }}
   {{- if (.Values.authentication.saml.lowercaseId ) }}
   PIRAL_AUTH_SAML_LOWERCASE_ID: "{{ .Values.authentication.saml.lowercaseId }}"
+  {{- end }}
+  {{- if (.Values.authentication.saml.checkAssertions ) }}
+  PIRAL_AUTH_SAML_CHECK_ASSERTIONS: "{{ .Values.authentication.saml.checkAssertions }}"
   {{- end }}
   {{- end }}
 
@@ -267,12 +282,14 @@ data:
   PIRAL_DB_REDIS_PREFIX: "{{ .Values.database.redis.prefix }}"
   {{- end }}
   {{- end }}
+
   ## MongoDB
   {{- if (eq .Values.database.provider "mongodb") }}
   {{- if (.Values.database.mongodb.prefix ) }}
   PIRAL_DB_MONGO_COLLECTION_PREFIX: "{{ .Values.database.mongodb.prefix }}"
   {{- end }}
   {{- end }}
+
   ## SQL
   {{- if (eq .Values.database.provider "sql") }}
   PIRAL_DB_SQL_NAME: "{{ required "Please provide the name for the SQL database" .Values.database.sql.dbname }}"
@@ -292,11 +309,19 @@ data:
   {{- end }}
   {{- end }}
 
+  ## DynamoDB
+  {{- if (eq .Values.database.provider "aws-dynamodb") }}
+  PIRAL_DB_DYNAMODB_REGION: "{{ required "Please provide the Amazon DynamoDB Region" .Values.database.dynamoDb.region }}"
+  {{- if (.Values.database.dynamoDb.prefix ) }}
+  PIRAL_DB_DYNAMODB_TABLE_PREFIX: "{{ .Values.database.dynamoDb.prefix }}"
+  {{- end }}
+  {{- end }}
+
   ## -----------------------
   ## Cache
   ## -----------------------
   PIRAL_CACHE: "{{ .Values.cache.provider }}"
-    ## Redis
+  ## Redis
   {{- if (eq .Values.cache.provider "redis") }}
   PIRAL_CACHE_REDIS_HOST: "{{ required "Please provide the host for the Redis database" .Values.cache.redis.host }}"
   {{- if (.Values.cache.redis.port ) }}
@@ -309,6 +334,17 @@ data:
   PIRAL_CACHE_REDIS_PREFIX: "{{ .Values.cache.redis.prefix }}"
   {{- end }}
   {{- end }}
+  ## Memcache
+  {{- if (eq .Values.cache.provider "memcache") }}
+  PIRAL_CACHE_MEMCACHE_SERVERS: "{{ required "Please provide the Memcache servers" .Values.cache.memcache.servers }}"
+  {{- if (.Values.cache.memcache.authUser ) }}
+  PIRAL_CACHE_MEMCACHE_AUTH_USER: "{{ .Values.cache.memcache.authUser }}"
+  {{- end }}
+  {{- if (.Values.cache.memcache.prefix ) }}
+  PIRAL_CACHE_MEMCACHE_PREFIX: "{{ .Values.cache.memcache.prefix }}"
+  {{- end }}
+  {{- end }}
+
 
   ## -----------------------
   ## Notification configuration
@@ -334,6 +370,12 @@ data:
   {{- if (eq .Values.notifications.provider "sendgrid") }}
   {{- if (.Values.notifications.sendgrid.sender) }}
   PIRAL_NOTIFICATION_SENDGRID_SENDER: "{{ .Values.notifications.sendgrid.sender }}"
+  {{- end }}
+  {{- end }}
+  ## ntfy.sh
+  {{- if (eq .Values.notifications.provider "ntfy") }}
+  {{- if (.Values.notifications.ntfy.url) }}
+  PIRAL_NOTIFICATION_NTFY_URL: "{{ .Values.notifications.ntfy.url }}"
   {{- end }}
   {{- end }}
 
