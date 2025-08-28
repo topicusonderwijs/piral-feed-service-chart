@@ -52,6 +52,10 @@ spec:
                 name: {{ template "feed-service.fullname" . }}-env
             - secretRef:
                 name: {{ template "feed-service.fullname" . }}-secret
+            # Custom add on topicus, for mapping API key with keyhub
+            - secretRef:
+                name: {{ .Values.topicus.apiKeySecret }}
+            # End Custom
             {{- if .Values.license.existingSecret }}
             - secretRef:              
                 name: "{{ .Values.license.existingSecret }}"

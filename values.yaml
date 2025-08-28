@@ -539,6 +539,8 @@ extendedConfig:
 #########################################
 topicus:
   secretStore: parnassys
+  # Name of the secret storing the API key, keep same as in externalSecrets
+  apiKeySecret: apiKey
   externalSecrets:
     licenseKey:
       record: <keyhub-uuid-here>
@@ -548,6 +550,10 @@ topicus:
       record: <keyhub-uuid-here>
       mappings:
         password: PIRAL_AUTH_LOCAL_PASS
+    apiKey:
+      record: <keyhub-uuid-here>
+      mappings:
+        password: PIRAL_DEFAULT_API_KEY
   imagePullSecret:
     secretName: piral-pull-secret
     keyhubUuid: <keyhub-uuid-here>
