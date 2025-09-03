@@ -540,7 +540,7 @@ extendedConfig:
 topicus:
   secretStore: parnassys
   # Name of the secret storing the API key, keep same as in externalSecrets
-  apiKeySecret: apiKey
+  apiKeySecret: apikey
   externalSecrets:
     licenseKey:
       record: <keyhub-uuid-here>
