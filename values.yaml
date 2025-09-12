@@ -8,7 +8,7 @@ image:
   repository: piral.azurecr.io/piral-feed-service
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "v1.13.4"
+  tag: "v1.16.0"
 
 # Configure the secret, which contains the credentials for the container registry.
 # For creating the image pull secret please visit:
@@ -120,6 +120,13 @@ globalConfig:
   # The audit handler to use (optional, default: "none"); choices: "none", "local"
   auditHandler: "none"
 
+  # The URL of a proxy to be used for HTTP requests. This might be needed if your feed service instance cannot communicate with external web services directly.
+  httpProxy: ""
+
+  # The maximum number of retries that the feed service should attempt when invoking webhook endpoints.
+  # Uses an exponential backoff for running the retries. (default: 3)
+  webhookMaxRetries: 3
+
 # Specify the authentication provider for the feed service. Options are:
 # microsoft, oauth2, oidc, local, ldap, saml (default is local, if no provider is specified)
 authentication:
@@ -133,6 +140,10 @@ authentication:
     # As alternative to providing the username and password directly in this values file,
     # you can specify the name of the K8s secret if it exists already or is created outside of this deployment.
     passwordSecret: ""
+    # The algorithm used for transporting the password of the local admin. 
+    # For "plain" you just store the password in the environment variable. For "sha256" you compute the SHA256 hash of the password and store the base64 representation in the environment variable.
+    # (default: plain)
+    passAlg: "plain"
   
   # Configuration details for the Microsoft authentication provider.
   # Required settings are: tenantId, clientId and adminEmail
@@ -150,6 +161,8 @@ authentication:
     authorityUrl: ""
     # The ID of the application created in the Microsoft AD (called "client ID")
     clientId: ""
+    # Azure AD client secret for advanced auth provider capabilities such as an AAD user lookup. (default: empty)
+    clientSecret: ""
     # The tenant id from the Microsoft AD configuration
     tenantId: ""
     # Flag for access restricting the users registered in the Microsoft AD. 
@@ -158,6 +171,8 @@ authentication:
     # The scope used for the client authentication. Default is set to "api://<client-id>/Profile.Read"
     # The scope is set in the Microsoft AD app registration and has a full URI format
     scope: ""
+    # Determines if the user's email should be always considered case-insensitive; choices: yes, no. (default: no)
+    lowercaseEmail: "no"
 
   # Configuration details required for a generic OAuth2 authentication provider    
   # Required settings are: clientId, authorizationUrl, tokenUrl, oauth2Key, and adminId
@@ -277,6 +292,8 @@ authentication:
     # Transform user IDs given by the IdP to be case-insensitive
     # Optional. Choices: yes, no (default: no)
     lowercaseId: "no"
+    # If enabled the assertions in the SAML response will be checked for a valid signature, too; choices: yes, no. (default: no)
+    checkAssertions: "no"
 
 # File storage configuration for persisting the pilets. Options are:
 # azure-blobstorage, aws-s3, do-spaces, disk (default is disk, if no provider is specified)
@@ -373,7 +390,7 @@ database:
     useTls: "no"
     # Prefix for the feed service keys in Redis
     prefix: "piral"
-
+  
   # Configuration for the MongoDB as database provider
   mongodb:
     # Connection string for accessing the MongoDB
@@ -400,6 +417,16 @@ database:
     # The location of a CA certificate to use for DB server trust (default: none)
     caCertLocation: ""
 
+  dynamoDb:
+    # Required. The Amazon DynamoDB AWS access key ID.
+    accessId: ""
+    # Required. The Amazon DynamoDB AWS access key.
+    accessKey: ""
+    # Required. The Amazon DynamoDB Region.
+    region: ""
+    # The Amazon DynamoDB prefix for the table names. (default: empty)
+    prefix: ""
+
 # The feed service will utilize the cache to store entities for faster access
 # Options for the cache are: memory, redis (default: memory)
 cache:
@@ -415,6 +442,16 @@ cache:
     # Connecting using a TLS connection (default: no)
     useTls: "no"
     # Prefix for the feed service keys in Redis
+    prefix: "piral"
+
+  memcache:
+    # Required. A comma separated list of [hostname:port] servers for connecting to the Memcache provider.
+    servers: ""
+    # Host access for the Memcache provider (default: nothing)
+    authUser: ""
+    # Host access for the Memcache provider (default: nothing)
+    authPass: ""
+    # Prefix to be used for the Memcache entries (default: piral)
     prefix: "piral"
 
 
@@ -445,6 +482,11 @@ notifications:
     apiKey: ""
     # Email address for the notifications (default: noreply@piral.cloud)
     sender: "noreply@piral.cloud"
+  
+  # Configuration for the ntfy.sh provider
+  ntfy:
+    # The full URL of the topic to be used for sending push notifications via ntfy.sh (default: nothing)
+    url: ""
 
 
 # Example configuration for storing data e.g. in a persistent file share as location,
@@ -475,6 +517,8 @@ portalConfig:
   PIRAL_UI_PRIMARY_COLOR: "#56aa1c"
   # Secondary color in the UI (optional, default: #78bb49) 
   PIRAL_UI_SECONDARY_COLOR: "#78bb49"
+  # Tertiary color in the UI (optional, default #745a13)
+  PIRAL_UI_TERTIARY_COLOR: "#745a13"
   # Font color in the UI (optional, default: #101010)
   PIRAL_UI_FONT_COLOR: "#101010"
   # Color of semi-transparent text (default: hsla(0,2%,55%,.7))
@@ -485,16 +529,28 @@ portalConfig:
   PIRAL_UI_CONTRAST_COLOR: "#ffffff"
   # Shadow color to be used (default: #f2f2f2)
   PIRAL_UI_SHADOW_COLOR: "#f2f2f2"
+  # The danger color to be used in the pages (UI portal, overview page, login, ...). (default: #d61c1c)
+  PIRAL_UI_DANGER_COLOR: "#d61c1c"
+  # The success color to be used in the pages (UI portal, overview page, login, ...). (default: #499e0d)
+  PIRAL_UI_SUCCESS_COLOR: "#499e0d"
+  # The info color to be used in the pages (UI portal, overview page, login, ...). (default: #1d72f3)
+  PIRAL_UI_INFO_COLOR: "#1d72f3"
+  # The warning color to be used in the pages (UI portal, overview page, login, ...). (default: #ffc007)
+  PIRAL_UI_WARNING_COLOR: "#ffc007"
   # Path to a logo for the UI (optional, example: /media/logo.png)
   # PIRAL_UI_LOGO_PATH: ""
   # API key for the portal's intrinsic pilet feed ("cloud") (example: abc)
   # PIRAL_UI_FEED_API_KEY: ""
   # Shows the cookie consent dialog; choices on, off (default: off)
   PIRAL_UI_SHOW_CONSENT: "off"
+  # Shows the homepage in the portal - otherwise the Piral Feed Service redirects to the login directly; choices on, off (default: off)
+  PIRAL_UI_SHOW_HOME: "off"
   # Disables the UI module/endpoint; choices on, off (default: off)
   PIRAL_UI_DISABLED: "off"
   # URL of the service's web management portal (default: value of PIRAL_PUBLIC_URL)
   # PIRAL_PORTAL_URL: "http://localhost:9000"
+  # Sets the key of the session ID field in the cookie (default: sid)
+  PIRAL_COOKIE_SESSION_KEY: "sid"
 
 # Extended configuration settings
 # Remark: unused settings for the portal config should be commented so that they are not set.

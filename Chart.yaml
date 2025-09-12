@@ -4,7 +4,7 @@ description: A Helm chart for operating the Piral Feed Service in Kubernetes
 type: application
 
 # The chart version.
-version: 0.4.0-beta3
+version: 0.5.0-beta
 
 # The version number of the Feed Service.
 appVersion: "v1.16.0"
