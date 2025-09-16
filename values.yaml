@@ -384,6 +384,8 @@ database:
     host: ""
     # Password for connecting to Redis
     password: ""
+    # Topicus thing to allow us to set the password using ExternalSecrets
+    passwordAddedViaExternalSecret: true
     # Port for the Redis connection - default 6380
     port: "6379"
     # Connecting using a TLS connection (default: no)
@@ -613,4 +615,3 @@ topicus:
   imagePullSecret:
     secretName: piral-pull-secret
     keyhubUuid: <keyhub-uuid-here>
-    
