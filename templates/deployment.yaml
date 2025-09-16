@@ -68,6 +68,12 @@ spec:
             - secretRef:              
                 name: "{{ .Values.authentication.local.passwordSecret }}"
             {{- end }}
+            {{- $name, $secret := range .Values.topicus.externalSecrets }}
+            {{- if $secret.addToEnv }}
+            - secretRef:
+                name: {{ $name | lower | replace " " "-" | trunc 63 | trimSuffix "-" }}
+            {{- end }}
+            {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           {{- if .Values.persistence.enabled }}
