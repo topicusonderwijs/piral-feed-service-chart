@@ -384,8 +384,8 @@ database:
     host: ""
     # Password for connecting to Redis
     password: ""
-    # Topicus thing to allow us to set the password using ExternalSecrets
-    passwordAddedViaExternalSecret: true
+    # Overrules the password set directly above. Instead, it requires you to set PIRAL_CACHE_REDIS_AUTH_PASS in the given secret
+    passwordSecret: ""
     # Port for the Redis connection - default 6380
     port: "6379"
     # Connecting using a TLS connection (default: no)

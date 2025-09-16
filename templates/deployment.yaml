@@ -68,10 +68,10 @@ spec:
             - secretRef:              
                 name: "{{ .Values.authentication.local.passwordSecret }}"
             {{- end }}
-            {{- $name, $secret := range .Values.topicus.externalSecrets }}
-            {{- if $secret.addToEnv }}
+            {{- if (eq .Values.cache.provider "redis" ) }}
+            {{- if .Values.cache.redis.passwordSecret }}
             - secretRef:
-                name: {{ $name | lower | replace " " "-" | trunc 63 | trimSuffix "-" }}
+                name: {{ .Values.cache.redis.passwordSecret }}
             {{- end }}
             {{- end }}
           resources:
