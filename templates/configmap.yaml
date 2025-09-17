@@ -294,7 +294,9 @@ data:
   {{- if (eq .Values.database.provider "sql") }}
   PIRAL_DB_SQL_NAME: "{{ required "Please provide the name for the SQL database" .Values.database.sql.dbname }}"
   PIRAL_DB_SQL_HOST: "{{ required "Please provide the host for the SQL database" .Values.database.sql.host }}"
+  {{-if (eq .Values.database.usernameSecret "") }}
   PIRAL_DB_SQL_USER: "{{ required "Please provide the user name for accessing the SQL database" .Values.database.sql.user }}"
+  {{- end}}
   {{- if (.Values.database.sql.dbtype ) }}
   PIRAL_DB_SQL_TYPE: "{{ .Values.database.sql.dbtype }}"
   {{- end }}

@@ -408,6 +408,8 @@ database:
     host: ""
     # The username for connecting the SQL database
     user: ""
+    # For when the username is to be pulled from a secret
+    userSecret: ""
     # Password for connecting to the SQL database
     password: ""
     # Password secret for connecting to the SQL database
