@@ -410,6 +410,8 @@ database:
     user: ""
     # Password for connecting to the SQL database
     password: ""
+    # Password secret for connecting to the SQL database
+    passwordSecret: ""
     # The type of the SQL database; choices: mysql, mariadb, postgres, mssql (default: mysql)
     dbtype: ""
     # Connecting using a TLS connection (default: no)

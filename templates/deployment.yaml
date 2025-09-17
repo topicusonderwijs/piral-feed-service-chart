@@ -74,6 +74,12 @@ spec:
                 name: {{ .Values.cache.redis.passwordSecret }}
             {{- end }}
             {{- end }}
+            {{- if (eq .Values.database.provider "sql") }}
+            {{- if .Values.database.sql.passwordSecret }}
+            - secretRef:
+                name: {{ .Values.database.sql.passwordSecret }}
+            {{- end }}
+            {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           {{- if .Values.persistence.enabled }}
