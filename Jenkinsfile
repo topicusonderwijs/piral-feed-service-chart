@@ -29,5 +29,5 @@ node() {
        }
     }
 
-    notify { slackChannel = "#par-particle-prod-alerts" }
+    notify { slackChannel = "#par-particle-sandbox-alerts" }
 }
