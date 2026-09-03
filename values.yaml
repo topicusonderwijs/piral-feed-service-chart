@@ -600,6 +600,14 @@ extendedConfig:
 ## Custom code for Topicus deployment  ##
 #########################################
 topicus:
+  serviceMonitor:
+    enabled: false
+    apiKey:
+      secret: apikey
+      key: password
+    path: /api/v1/metrics
+    port: http
+
   secretStore: parnassys
   # Name of the secret storing the API key, keep same as in externalSecrets
   apiKeySecret: apikey

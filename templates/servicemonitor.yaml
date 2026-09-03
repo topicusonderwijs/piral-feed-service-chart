@@ -1,0 +1,35 @@
+{{- with .Values.topicus.serviceMonitor }}
+{{- if .enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "feed-service.fullname" $ }}
+  labels:
+    {{- include "feed-service.labels" $ | nindent 4 }}
+spec:
+  namespaceSelector:
+    matchNames:
+    - {{ $.Release.Namespace }}
+  selector:
+    matchLabels:
+      {{- include "feed-service.selectorLabels" $ | nindent 6 }}
+
+  endpoints:
+  - authorization:
+      type: Bearer
+      credentials:
+        name: {{ .apiKey.secret }}
+        key: {{ .apiKey.key }}
+        optional: false
+    path: {{ .path }}
+    port: {{ .port }}
+    scheme: http
+    # metric relabel rules
+    metricRelabelings:
+    - action: replace
+      regex: (.*)
+      replacement: piral_${1}
+      sourceLabels:
+      - __name__
+{{- end }}
+{{- end }}
